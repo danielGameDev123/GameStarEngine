@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Editor de Pixel Art</title>
+    <style>
+        
+   
+    </style>
+</head>
+<body>
+    <h1>Editor de Pixel Art</h1>
+    <label for="projectName">Nome do Projeto: </label>
+    <input type="text" id="projectName" placeholder="Nome do projeto">
+    <br><br>
+    <canvas id="pixelCanvas" width="400" height="400" style="border: 1px solid black;"></canvas>
+    <br>
+    <input type="color" id="colorPicker" value="#000000">
+    <button id="eraserButton">Borracha</button>
+    <button id="downloadButton">Baixar PNG</button>
+    <a href="motor.html">
+    
+        
+    <button>Ir para Outra Página</button>
+    
+    
+    <a href="caminho_da_outra_pagina.html"></a>
+    
+    
+    </html>
+    <script>
+        const canvas = document.getElementById("pixelCanvas");
+        const ctx = canvas.getContext("2d");
+        const colorPicker = document.getElementById("colorPicker");
+        const eraserButton = document.getElementById("eraserButton");
+        const downloadButton = document.getElementById("downloadButton");
+        const projectNameInput = document.getElementById("projectName");
+
+        const pixelSize = 20; // Tamanho de cada pixel
+        const numRows = canvas.height / pixelSize;
+        const numCols = canvas.width / pixelSize;
+
+        let drawing = false;
+        let erasing = false;
+
+        let pixels = Array.from({ length: numRows }, () => new Array(numCols).fill("#ffffff"));
+
+        canvas.addEventListener("mousedown", startDrawing);
+        canvas.addEventListener("mousemove", draw);
+        canvas.addEventListener("mouseup", stopDrawing);
+        canvas.addEventListener("mouseout", stopDrawing);
+        eraserButton.addEventListener("click", toggleEraser);
+        downloadButton.addEventListener("click", downloadPNG);
+
+        function startDrawing(event) {
+            drawing = true;
+            draw(event);
+        }
+
+        function draw(event) {
+            if (!drawing) return;
+
+            const col = Math.floor(event.offsetX / pixelSize);
+            const row = Math.floor(event.offsetY / pixelSize);
+
+            if (erasing) {
+                pixels[row][col] = "#ffffff";
+            } else {
+                pixels[row][col] = colorPicker.value;
+            }
+
+            drawPixel(col, row);
+        }
+
+        function stopDrawing() {
+            drawing = false;
+        }
+
+        function drawPixel(col, row) {
+            ctx.fillStyle = pixels[row][col];
+            ctx.fillRect(col * pixelSize, row * pixelSize, pixelSize, pixelSize);
+        }
+
+        function toggleEraser() {
+            erasing = !erasing;
+            eraserButton.textContent = erasing ? "Pincel" : "Borracha";
+        }
+
+        function downloadPNG() {
+            const projectName = projectNameInput.value || "pixel_art";
+            const link = document.createElement("a");
+            link.download = `${projectName}.png`;
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        }
+
+        // Inicialização: desenhar uma grade
+        ctx.strokeStyle = "#000000";
+        for (let row = 0; row < numRows; row++) {
+            for (let col = 0; col < numCols; col++) {
+                drawPixel(col, row);
+                ctx.strokeRect(col * pixelSize, row * pixelSize, pixelSize, pixelSize);
+            }
+        }
+    </script>
+</body>
+</html>

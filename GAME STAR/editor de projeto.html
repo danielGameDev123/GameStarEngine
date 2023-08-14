@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor de Projetos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #projectList {
+            list-style: none;
+            padding: 0;
+        }
+        .projectItem {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+        .projectName {
+            margin-right: 10px;
+        }
+        .deleteButton {
+            cursor: pointer;
+        }
+        #createButton {
+            display: none;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Editor de Projetos</h1>
+    <div>
+        <label for="projectName">Nome do Projeto:</label>
+        <input type="text" id="projectName">
+        <button onclick="addProject()">Adicionar Projeto</button>
+    </div>
+    <ul id="projectList"></ul>
+    <button id="createButton" onclick="navigateToNewPage()">Criar</button>
+
+    <script>
+        // Função para obter os projetos salvos do LocalStorage
+        function getSavedProjects() {
+            const projects = localStorage.getItem('projects');
+            return projects ? JSON.parse(projects) : [];
+        }
+
+        // Função para salvar os projetos no LocalStorage
+        function saveProjects(projects) {
+            localStorage.setItem('projects', JSON.stringify(projects));
+        }
+
+        // Variável para armazenar os projetos
+        let projects = getSavedProjects();
+
+        // Função para renderizar a lista de projetos
+        function renderProjectList() {
+            const projectList = document.getElementById('projectList');
+            projectList.innerHTML = '';
+
+            projects.forEach((project) => {
+                const projectItem = document.createElement('li');
+                projectItem.className = 'projectItem';
+
+                const projectNameSpan = document.createElement('span');
+                projectNameSpan.className = 'projectName';
+                projectNameSpan.textContent = project;
+
+                const deleteButton = document.createElement('span');
+                deleteButton.className = 'deleteButton';
+                deleteButton.textContent = 'Excluir';
+                deleteButton.onclick = () => deleteProject(project);
+
+                projectItem.appendChild(projectNameSpan);
+                projectItem.appendChild(deleteButton);
+
+                projectList.appendChild(projectItem);
+            });
+
+            // Mostrar o botão "Criar" se houver pelo menos um projeto
+            const createButton = document.getElementById('createButton');
+            createButton.style.display = projects.length > 0 ? 'block' : 'none';
+        }
+
+        // Função para adicionar um projeto
+        function addProject() {
+            const projectNameInput = document.getElementById('projectName');
+            const projectName = projectNameInput.value.trim();
+
+            if (projectName === '') {
+                alert('Digite um nome para o projeto.');
+                return;
+            }
+
+            projects.push(projectName);
+            projectNameInput.value = '';
+            saveProjects(projects);
+            renderProjectList();
+        }
+
+        // Função para excluir um projeto
+        function deleteProject(project) {
+            projects = projects.filter((p) => p !== project);
+            saveProjects(projects);
+            renderProjectList();
+        }
+
+        // Função para navegar para outra página (você pode personalizar o URL da página destino)
+        function navigateToNewPage() {
+            // Aqui, você pode definir o URL da página para a qual deseja navegar após criar um novo projeto
+            // Neste exemplo, vamos redirecionar para outra página chamada "outra-pagina.html"
+            window.location.href = 'editor.html';
+        }
+
+        // Renderizar a lista inicial
+        renderProjectList();
+    </script>
+</body>
+</html>
